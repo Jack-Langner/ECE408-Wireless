@@ -46,6 +46,7 @@ if isequal(RATE,13)
     rateStruct.NBPSC = 1;
     rateStruct.NCBPS = 48;
     rateStruct.NDBPS = rateStruct.NCBPS*rateStruct.eccRate;
+    rateStruct.ttl = '6 Mbps';
 elseif isequal(RATE,15)
     rateStruct.eccRate = 3/4;
     rateStruct.hConvEnc = hCE34;
@@ -57,6 +58,7 @@ elseif isequal(RATE,15)
     rateStruct.NBPSC = 1;
     rateStruct.NCBPS = 48;
     rateStruct.NDBPS = rateStruct.NCBPS*rateStruct.eccRate;
+    rateStruct.ttl = '9 Mbps';
 elseif isequal(RATE,5)
     rateStruct.eccRate = 1/2;
     rateStruct.hConvEnc = hCE12;
@@ -68,6 +70,7 @@ elseif isequal(RATE,5)
     rateStruct.NBPSC = 2;
     rateStruct.NCBPS = 96;
     rateStruct.NDBPS = rateStruct.NCBPS*rateStruct.eccRate;
+    rateStruct.ttl = '12 Mbps';
 elseif isequal(RATE,7)
     rateStruct.eccRate = 3/4;
     rateStruct.hConvEnc = hCE34;
@@ -79,6 +82,7 @@ elseif isequal(RATE,7)
     rateStruct.NBPSC = 2;
     rateStruct.NCBPS = 96;
     rateStruct.NDBPS = rateStruct.NCBPS*rateStruct.eccRate;
+    rateStruct.ttl = '18 Mbps';
 elseif isequal(RATE,9)
     rateStruct.eccRate = 1/2;
     rateStruct.hConvEnc = hCE12;
@@ -92,6 +96,7 @@ elseif isequal(RATE,9)
     rateStruct.NBPSC = 4;
     rateStruct.NCBPS = 192;
     rateStruct.NDBPS = rateStruct.NCBPS*rateStruct.eccRate;
+    rateStruct.ttl = '24 Mbps';
 elseif isequal(RATE,11)
     rateStruct.eccRate = 3/4;
     rateStruct.hConvEnc = hCE34;
@@ -105,6 +110,7 @@ elseif isequal(RATE,11)
     rateStruct.NBPSC = 4;
     rateStruct.NCBPS = 192;
     rateStruct.NDBPS = rateStruct.NCBPS*rateStruct.eccRate;
+    rateStruct.ttl = '36 Mbps';
 elseif isequal(RATE,1)
     rateStruct.eccRate = 2/3;
     rateStruct.hConvEnc = hCE23;
@@ -118,6 +124,7 @@ elseif isequal(RATE,1)
     rateStruct.NBPSC = 6;
     rateStruct.NCBPS = 288;
     rateStruct.NDBPS = rateStruct.NCBPS*rateStruct.eccRate;
+    rateStruct.ttl = '48 Mbps';
 elseif isequal(RATE, 3)
     rateStruct.eccRate = 3/4;
     rateStruct.hConvEnc = hCE34;
@@ -131,6 +138,7 @@ elseif isequal(RATE, 3)
     rateStruct.NBPSC = 6;
     rateStruct.NCBPS = 288;
     rateStruct.NDBPS = rateStruct.NCBPS*rateStruct.eccRate;
+    rateStruct.ttl = '54 Mbps';
 end
 rateStruct.NMSPOS = rateStruct.NCBPS/rateStruct.NBPSC;
 rateStruct.hOFDMmod = comm.OFDMModulator;
