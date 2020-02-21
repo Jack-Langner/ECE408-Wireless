@@ -1,16 +1,16 @@
 % data rate is 36 Mbps
-RS = mcsInfo(13);
-numBytes = 1024;
-numSym = ceil((16+8*numBytes+6)/RS.NDBPS); %defined in the Standarad
+modes = [13 15 5 7 9 11 1 3];
 
-EbNodB = (0:0.5:12).';
+numBytes = 1024;
+
+
+EbNodB = (0:2:12).';
 lenEbNo = length(EbNodB);
 %codeRate = 1/2;
 %M = 2;
 %k = log2(M);
-SNRdB = EbNodB+10*log10(RS.NBPSC*RS.eccRate);
 %jj = 15;
-BERsim = zeros(length(SNRdB),1);
+BERsim = zeros(lenEbNo,length(modes));
 LFSR = ones(7,1);
 pilotPolar = NaN(2^length(LFSR)-1,1);
 for nn = 1:2^length(LFSR)-1
@@ -20,13 +20,18 @@ for nn = 1:2^length(LFSR)-1
 end
 clear LFSR
 pilotPolar = -2*pilotPolar+1;
-pilotPolarInd = mod(0:numSym-1,127)+1;
-numIter = 40;
+
+numIter = 10;
 wb = waitbar(0,'Performing simulation');
 tstart = clock;
+for yy = 1:length(modes)
+RS = mcsInfo(modes(yy));
+numSym = ceil((16+8*numBytes+6)/RS.NDBPS); %defined in the Standarad
+SNRdB = EbNodB+10*log10(RS.NBPSC*RS.eccRate);
+pilotPolarInd = mod(0:numSym-1,127)+1;
 for ii = 1:numIter
 for jj = 1:lenEbNo
-    waitbar(((ii-1)*lenEbNo+jj)/(lenEbNo*numIter),wb)
+    waitbar(((yy-1)*numIter*lenEbNo+(ii-1)*lenEbNo+jj)/(lenEbNo*numIter*length(modes)),wb)
 %%
 % msg = [0x04 0x02 0x00 0x2E 0x00 0x60 0x08 0xCD 0x37 0xA6 ...
 %  0x00 0x20 0xD6 0x01 0x3C 0xF1 0x00 0x60 0x08 0xAD ...
@@ -160,8 +165,10 @@ rxencMsg = deint1(:);
 decodedSIGNAL = step(RS.hVitDec, rxencMsg);
 rxmsgBin = mod(decodedSIGNAL+seq,2);
 
-BERsim(jj) = BERsim(jj) + sum(abs(rxmsgBin-msgBin))/length(msgBin);
+BERsim(jj,yy) = BERsim(jj,yy) + sum(abs(rxmsgBin-msgBin))/length(msgBin);
 end
+end
+
 end
 tend = clock;
 close(wb)

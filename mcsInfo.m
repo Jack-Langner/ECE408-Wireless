@@ -65,7 +65,7 @@ elseif isequal(RATE,5)
     rateStruct.hMod = comm.QPSKModulator;
     rateStruct.hDemod = comm.QPSKDemodulator;
     rateStruct.R1R4 = [0 1 0 1];
-    rateStruct.NBPSC = 1;
+    rateStruct.NBPSC = 2;
     rateStruct.NCBPS = 96;
     rateStruct.NDBPS = rateStruct.NCBPS*rateStruct.eccRate;
 elseif isequal(RATE,7)
