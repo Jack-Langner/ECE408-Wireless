@@ -1,31 +1,29 @@
-%crcPoly = 'z^32 + z^26 + z^23 + z^22 + z^16 + z^12 + z^11 + z^10 + z^8 + z^7 + z^5 + z^4 + z^2 + z + 1';
-crcPoly2= [32 26 23 22 16 12 11 10 8 7 5 4 2 1 0];
-%genCRC = comm.CRCGenerator(crcPoly);
-genCRC2= comm.CRCGenerator(crcPoly2);
+modes = [6 9 12 18 24 36 48 54];
+yy = 3;
+rateStruct = mcsInfo(modes(yy));
+
+crcPoly= [32 26 23 22 16 12 11 10 8 7 5 4 2 1 0];
+genCRC= comm.CRCGenerator(crcPoly);
 %
 fileID = fopen('tmp.txt','r');
 [msg, numBytes] = fscanf(fileID,'%c');
-cBin = de2bi(numBytes,12);
 msgASCII = (double(msg)).';
 msgBin = de2bi(msgASCII,8);
 
-msgBin = ([randi(2,10,8)-1;msgBin]).'; % adding minimum MAC header
+msgBin = ([randi(2,10,8)-1;msgBin]).'; % adding minimum MAC header length
 msgBin = msgBin(:);
 %msgBin2 = genCRC(msgBin);
-msgBin = genCRC2(msgBin);
-%%
+msgBin = genCRC(msgBin); %this is used to determine numSym
+numSym = ceil((16+length(msgBin)+6)/rateStruct.NDBPS); %defined in the Standard
+cBin = de2bi(length(msgBin)/8,12);
 
-sigRS = mcsInfo(6); % rate struct for the signal frame
 % data rate is 36 Mbps
-modes = [6 9 12 18 24 36 48 54];
-yy = 1;
-RS = mcsInfo(modes(yy));
+
 numBits = numel(msgBin)+6;% +6 b/c required to have tail of atleast 6 zeros
 pad = rateStruct.NDBPS*ceil(numBits/rateStruct.NDBPS)-numBits; % number of pad bits
 msgBin = [msgBin(:) ; zeros(pad+6,1)]; %+6 for required tail
 msgBin = double(msgBin);
-
-%numBytes = 1*1024;
+%
 EbNodB = (0:0.5:12).';
 lenEbNo = length(EbNodB);
 %codeRate = 1/2;
@@ -39,11 +37,15 @@ numIter = 10;
 % wb = waitbar(0,'Beginning simulation');
 % tstart = clock;
 % for yy = 1:length(modes)
+sigRS = mcsInfo(6); % rate struct for the signal frame
+sigRS.hVitDec.TracebackDepth = 18; % have to change for SIGframe
+SIGframe = [rateStruct.R1R4 0 cBin mod(sum([rateStruct.R1R4 cBin]),2) zeros(1,6)].';
+encSIGframe = step(sigRS.hConvEnc, SIGframe);
+%tmp = step(sigRS.hVitDec,encSIGframe)
 
-numSym = ceil((16+8*numBytes+6)/RS.NDBPS); %defined in the Standard
-
-SIGframe = [RS.R1R4 0 cBin mod(sum([RS.R1R4 cBin]),2) zeros(1,6)];
-
+intLSIGframe= myInterleaver(sigRS,1,encSIGframe);
+modSIGframe = step(sigRS.hMod,intLSIGframe);
+%%
 %function BER = berSim80211(numBytes,rateStruct,numSym,SNRdB)
 % pilot tones are BPSK symbols which follow the order [1 1 1 -1], but the
 % sign of the tones in a given OFDM symbol is determined by the scrambler
@@ -58,13 +60,13 @@ for nn = 1:2^length(LFSR)-1
 end
 clear LFSR
 pilotPolar = -2*pilotPolar+1;
-pilotPolarInd = mod(0:numSym-1,127)+1; % used for indexing purposes later
+pilotPolarInd = mod(0:numSym,127)+1; % used for indexing purposes later
 
 %msgBin = randi(2,numBytes+2,8)-1; 
 %+2 bytes for the SERVICE field that would be prepended to DATA
 
 %%
-initState = randi(2,7,1)-1; 
+initState = randi(2,7,1)-1; % random bit sequence
 %initializer the scrambler in a random state per 802.11
 LFSR = initState; 
 seq = NaN(length(msgBin),1); 
@@ -80,24 +82,26 @@ msgScr = mod(double(msgBin)+seq,2);
 
 % convolutional encoding the data frame for the given data rate
 encodedSIGNAL = step(rateStruct.hConvEnc,msgScr);
-q = reshape(encodedSIGNAL,rateStruct.NCBPS,numSym);
+encSIGMat = reshape(encodedSIGNAL,rateStruct.NCBPS,numSym);
 % reshape encSig b/c everything that follows is based on size of OFDM frame
 
 % interleaving the data
-s = max([rateStruct.NBPSC/2 1]); %number of coded bits per subcarrier
-kint = (0:rateStruct.NCBPS-1).'; % initial index of data in OFDM symbol
-iint = (rateStruct.NCBPS/16)*mod(kint,16)+floor(kint/16); % index after 1st interleave
-jint = s*floor(iint/s)+mod((iint+rateStruct.NCBPS-floor(16*iint/rateStruct.NCBPS)),s); %index after second interleace
-%%
-int1 = NaN(rateStruct.NCBPS,numSym);%data after 1st interleave
-int2 = NaN(rateStruct.NCBPS,numSym);%data after 2nd interleave
+% s = max([rateStruct.NBPSC/2 1]); %number of coded bits per subcarrier
+% kint = (0:rateStruct.NCBPS-1).'; % initial index of data in OFDM symbol
+% iint = (rateStruct.NCBPS/16)*mod(kint,16)+floor(kint/16); % index after 1st interleave
+% jint = s*floor(iint/s)+mod((iint+rateStruct.NCBPS-floor(16*iint/rateStruct.NCBPS)),s); %index after second interleace
+% %
+% int1 = NaN(rateStruct.NCBPS,numSym);%data after 1st interleave
+% int2 = NaN(rateStruct.NCBPS,numSym);%data after 2nd interleave
+% 
+% for qq = 1:numSym
+% for nn = 1:rateStruct.NCBPS
+%     int1(iint(nn)+1,qq) = encSIGMat(kint(nn)+1,qq);
+%     int2(jint(nn)+1,qq) = int1(iint(nn)+1,qq);
+% end
+% end
+int2 = myInterleaver(rateStruct,numSym,encSIGMat);
 
-for qq = 1:numSym
-for nn = 1:rateStruct.NCBPS
-    int1(iint(nn)+1,qq) = q(kint(nn)+1,qq);
-    int2(jint(nn)+1,qq) = int1(iint(nn)+1,qq);
-end
-end
 sint2 = size(int2);
 
 % modulating the data
@@ -109,6 +113,8 @@ for nn = 1:numSym
     uM(:,nn) = step(rateStruct.hMod,uD(:,nn));
 end
 
+PL = [modSIGframe uM]; % complete payload ti be sent
+%%
 % M is a function in 802.11 that maps LSI to OFDM tones
 M = NaN(rateStruct.NMSPOS,1);
 LSI = (0:rateStruct.NMSPOS-1).'; %logical subcarrier index
@@ -118,14 +124,14 @@ M(LSI>=18 & LSI<=23) = LSI(LSI>=18 & LSI<=23)-24;
 M(LSI>=24 & LSI<=29) = LSI(LSI>=24 & LSI<=29)-23;
 M(LSI>=30 & LSI<=42) = LSI(LSI>=30 & LSI<=42)-22;
 M(LSI>=43 & LSI<=47) = LSI(LSI>=43 & LSI<=47)-21;
-%%
+%
 pilotInd = [12 26 40 54]-6; % indeces where pilot tones are inserted
 pilotVal = [1 1 1 -1]; % symbols on the pilot tones
-modSigPilot = zeros(rateStruct.NMSPOS+5,numSym); 
+modSigPilot = zeros(rateStruct.NMSPOS+5,numSym+1); 
 % modulated signal with pilot tones inserted and DC null
-for qq = 1:numSym
+for qq = 1:numSym+1
     for nn = 1:rateStruct.NMSPOS
-        modSigPilot(M(nn)+27,qq) = uM(nn,qq); %indexing game
+        modSigPilot(M(nn)+27,qq) = PL(nn,qq); %indexing game
     end
     modSigPilot(pilotInd,qq) = pilotVal*pilotPolar(pilotPolarInd(qq));
 end
@@ -133,21 +139,33 @@ end
 % OFDM modulate the data
 % using vanilla OFDM modulator from MathWorks because I couldnt figure out
 % how 802.11 implements IFFT
-txSIG = NaN(rateStruct.hOFDMmod.FFTLength+rateStruct.hOFDMmod.CyclicPrefixLength,numSym);
-for qq = 1:numSym
+txSIG = NaN(rateStruct.hOFDMmod.FFTLength+rateStruct.hOFDMmod.CyclicPrefixLength,numSym+1);
+for qq = 1:numSym+1
 txSIG(:,qq) = step(rateStruct.hOFDMmod,modSigPilot(:,qq));
 end
+%%
+%txSIG = awgn(txSIG,SNRdB,'measured'); %adding noise
 
-txSIG = awgn(txSIG,SNRdB,'measured'); %adding noise
-
-rxSIG = NaN(rateStruct.NMSPOS,numSym); % received OFDM symbols
+rxSIG = NaN(rateStruct.NMSPOS,numSym+1); % received OFDM symbols
 nullCarr = [6 20 27 34 48]; % no data symbols at these indices
-for qq = 1:numSym
+for qq = 1:numSym+1
 tmp = step(rateStruct.hOFDMdemod,txSIG(:,qq));
 tmp(nullCarr) = [];
 rxSIG(:,qq) = tmp;
 end
 
+rxSIGframe = rxSIG(:,1);
+rxSIG2 = rxSIG(:,2:end);
+
+demodSIGframe = step(sigRS.hDemod,rxSIGframe);
+deintSIGframe = myDeinterleaver(sigRS,1,demodSIGframe);
+decodSIGframe = step(sigRS.hVitDec,deintSIGframe);
+decodSIGframe = decodSIGframe.';
+%[SIGframe.'; decodSIGframe]
+
+rxRate = decodSIGframe(1:4);
+rxLen = decodSIGframe(6:17);
+%%
 % demodulating the data
 demodSIG = NaN(rateStruct.NMSPOS,numSym);
 uB3 = NaN(rateStruct.NBPSC,rateStruct.NMSPOS,numSym);
