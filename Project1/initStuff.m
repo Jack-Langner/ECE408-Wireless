@@ -1,4 +1,4 @@
-
+% just a little sandbox to get started with my ideas
 
 x = (-5:0.01:5)';
 p = -4:0.5:4;
@@ -40,3 +40,11 @@ c = i+1j*q;
 c = c(:);
 mean(abs(c).^2)
 %%
+fileID = fopen('tmp.txt','r');
+[A, count] = fscanf(fileID,'%c');
+cBin = de2bi(count,12);
+q = (double(A)).';
+Q = de2bi(q,8);
+%[q Q]
+W = bi2de(Q);
+w = convertCharsToStrings(char(W))
