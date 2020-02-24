@@ -42,8 +42,9 @@ for nn = 1:NCBPS
     int1(iint(nn)+1) = r(kint(nn)+1);
     int2(jint(nn)+1) = int1(iint(nn)+1);
 end
-
-tmp = [LInter int2];
+sigRS = mcsInfo(6);
+tmpInt = myInterleaver(sigRS,1,encodedSIGNAL1);
+tmp = [LInter tmpInt int2];
 
 % would scramble data here, but signal frame not scrambled
 %% modulating the data

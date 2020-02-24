@@ -1,6 +1,11 @@
 
 function deint1 = myDeinterleaver(rateStruct,numSym,binMat)
 % deinterleaving the signal frame
+% rateStruct is the rateStruct that defines the info of the MCS used
+% numSym is the number of OFDM symbols to be processed
+% binMat is the matrix of binary values to be interleaved
+% function written once I realized multiple rateStruct would have to be
+% processed at the same time.
 s = max([rateStruct.NBPSC/2 1]); %number of coded bits per subcarrier
 kint = (0:rateStruct.NCBPS-1).'; % initial index of data in OFDM symbol
 iint = (rateStruct.NCBPS/16)*mod(kint,16)+floor(kint/16); % index after 1st interleave

@@ -18,9 +18,9 @@ pilotPolarInd = mod(0:numSym-1,127)+1; % used for indexing purposes later
 msgBin = randi(2,numBytes+2,8)-1; 
 %+2 bytes for the SERVICE field that would be prepended to DATA
 
-numBits = numel(msgBin)+6;% +6 b/c required to have tail of atleast 6 zeros
+numBits = numel(msgBin)+6+16;% +6 b/c required to have tail of atleast 6 zeros
 pad = rateStruct.NDBPS*ceil(numBits/rateStruct.NDBPS)-numBits; % number of pad bits
-msgBin = [msgBin(:) ; zeros(pad+6,1)]; %+6 for required tail
+msgBin = [zeros(16,1); msgBin(:) ; zeros(pad+6,1)]; %+6 for required tail
 msgBin = double(msgBin);
 
 initState = randi(2,7,1)-1; 
