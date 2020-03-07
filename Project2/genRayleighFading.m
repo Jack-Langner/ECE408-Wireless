@@ -40,7 +40,7 @@ sqSE = sqrt(SE);
 % hold on
 % plot(f,sqSE)
 
-%
+% first row of r will be real valued, because it is average.
 q = fdn.*sqSE;
 Q = ifft(q,N);
 tmp = sqrt(sum(Q.^2,2));
