@@ -3,7 +3,6 @@
 % Jack Langner - MATLAB 2019b
 % Due March 11, 2020
 %%
-
 M = 2.^(0:2);
 n = 1e4;
 SNRdb = (0:50).';
@@ -48,7 +47,7 @@ T = 2;
 M = 2.^(0:1);
 SNRdb = (0:50).';
 lenSNR = length(SNRdb);
-numIter = 50;
+numIter = 25;
 Aber = zeros(length(SNRdb),length(M));
 tstart = clock;
 wb = waitbar(0,'Beginning simulation');
@@ -58,7 +57,7 @@ for mm = 1:length(M)
 for ii = 1:numIter
     for jj = 1:lenSNR
         %SNR of ' num2str(SNRdb(jj)) 'dB,
-        newMsg1 = ['Diversity order: ' num2str(M(mm))];
+        newMsg1 = ['Receive Diversity order: ' num2str(M(mm))];
         newMsg2 = ['Simulation iteration # ' num2str(ii)];
         %newMsg3 = 'how big is the box';
         newMsg = {newMsg1, newMsg2};
@@ -83,30 +82,22 @@ Aber = Aber/numIter;
 %%
 %**************** plotting ***********************************************
 
-
-%
 figure
-semilogy(SNRdb,ber);
-
-bert = berawgn(SNRdb,'psk',2,'nondiff');
+semilogy(SNRdb,ber(:,1),'-o');
 grid on
 hold on
-%semilogy(SNRdb,bert)
+semilogy(SNRdb,ber(:,2),'-v');
+semilogy(SNRdb,ber(:,3),'-s');
 
-%s1 = 10.^(-SNRdb/20);
-qBERT = (qfunc(sqrt(2*10.^(SNRdb/10))));%theoretical bit error rate for BPSK
-%semilogy(SNRdb,qBERT)
-
-% use bertool for theoretical curves
 % last input for berfading is diversity order
-BERrf = NaN(length(SNRdb),1);
-BERrf(:,1) = berfading(SNRdb,'psk',2,1);
-% BERrf(:,1) = berfading(SNRdb,'psk',2,1);
-% BERrf(:,2) = berfading(SNRdb,'psk',2,2);
-% BERrf(:,3) = berfading(SNRdb,'psk',2,4);
+%BERrf = NaN(length(SNRdb),1);
+BERrf = berfading(SNRdb,'psk',2,1);
 semilogy(SNRdb,abs(BERrf));
-semilogy(SNRdb,Aber)
-xlabel('SNR [dB]');ylabel('BER [%]');
-legend('sim 1','sim 2','sim 4','Rayleigh','Alam1','Alam2')
+semilogy(SNRdb,Aber(:,1),'-d')
+semilogy(SNRdb,Aber(:,2),'-^')
+
+xlabel('SNR [dB]');ylabel('P_{b}, bit error rate (BER)');
+legend('no diversity (1 Tx, 1 Rx)','MRRC (1 Tx, 2 Rx)',...
+    'MRRC (1 Tx, 4 Rx)','Rayleigh','new scheme (2 Tx, 1 Rx)',...
+    'new scheme 2 Tx, 2 Rx)')
 ylim([1e-6 1])
-%legend('sim','berawgn','qfunc','Rayleigh')

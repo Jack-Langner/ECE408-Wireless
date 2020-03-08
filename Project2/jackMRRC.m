@@ -14,12 +14,17 @@ function ber = jackMRRC(n,M,SNRdb)
 
 b = randi(2,n,1)-1;
 s = -2*b+1;
-chan = genRayleighFading(n,1,M);
+chan = genRayleighFadingV2(n,1,M,'false');
 
 rxData = NaN(n,M);
 for qq = 1:M
     rxData(:,qq) = awgn(s.*chan(:,qq),SNRdb,'measured');
 end
+% SNRL = 10.^(-SNRdb/10);
+% rx2 = s.*chan;
+% mrx = mean(rx2);
+% nois = sqrt(SNRL*mrx).*randn(n,M);
+% rxData = rx2+nois;
 
 st = sum(conj(chan).*rxData,2);
 

@@ -32,3 +32,18 @@ b = -2*(randi(2,n,T)-1)+1 + 1j*(-2*(randi(2,n,T)-1)+1)
 s = NaN(n*T,T);
 s(1:T:end-1,:) = b;
 s(2:T:end,:) = [-conj(b(:,2)) conj(b(:,1))];
+%%
+tmp = randi(5,3,1)+1j*randi(5,3,1)
+
+TMP = toeplitz(tmp)
+
+%%
+
+s = sym('s',[3 1]);
+h = sym('h',[3 1]);
+n = sym('n',[3 1]);
+
+r = toeplitz(-s)*h+n;
+
+st = toeplitz(-h)*r
+

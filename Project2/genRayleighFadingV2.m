@@ -3,27 +3,31 @@
 % Jack Langner - MATLAB 2019b
 % Due March 11, 2020
 
-function r = genRayleighFading(N,fD,numChan,fig)
+function r = genRayleighFadingV2(N,fD,numChan,fig)
 
-r = NaN(N,numChan);
-for qq = 1:numChan
+%r = NaN(N,numChan);
+%for qq = 1:numChan
 
 % generate the samples of a Rayleigh fading channel with a given maximum
 % Doppler frequency, fD. N is the number of points to be generated, r is a
 % complex column vector that represents the channel at different times
 %N = 1e1; %total number of noise samples
+% improved speed by getting rid of for loop
 
-% N = 2^8;
+% N = 2^10;
 % fD = 1;
+% numChan = 5;
+% fig = 'true';
 
-ssbfdn = randn(floor(N/2),2)+1j*randn(floor(N/2),2); % single sideband frequency domain noise
+ssbfdn = randn(floor(N/2),2*numChan)+1j*randn(floor(N/2),2*numChan); % single sideband frequency domain noise
 %ssbfdn = (randn(floor(N/2),2));%+1j*randn(floor(N/2),2)); % single sideband frequency domain noise
+%
 if isequal(mod(N,2),0)
     fdn = [conj(flipud(ssbfdn));ssbfdn];
 elseif isequal(mod(N,2),1)
     fdn = [conj(flipud(ssbfdn));zeros(1,2);ssbfdn];
 end
-
+%
 df = (2*fD)/(N-1);
 %T = 1/df;
 f = (-fD:df:fD).';
@@ -39,21 +43,37 @@ sqSE = sqrt(SE);
 % first row of r will be real valued, because it is average.
 q = fdn.*sqSE;
 Q = ifft(q,N);
-tmp = sqrt(sum(Q.^2,2));
-rbar = mean(abs(tmp));
-r(:,qq) = tmp./rbar;
-end
+Q = Q.^2;
+Q = reshape(Q,N,2,numChan);
+Q = sum(Q,2);
+Q = sqrt(reshape(Q,N,numChan));
+
+%
+%tmp = sqrt(sum(Q.^2,2));
+rbar = mean(abs(Q));
+r = Q./rbar;
+%end
 
 if isequal(fig,'true')
 figure
 histogram(abs(r(:,1)),50,'Normalization','pdf','LineWidth',1)
 x = 0:0.01:3.5;
-s2 = (mean(abs(r))/sqrt(pi/2))^2;
+s2 = (mean(abs(r(:,1)))/sqrt(pi/2))^2;
 y = (x/s2).*exp(-(x.^2)/(2*s2));
 hold on
 plot(x,y,'LineWidth',2)
 legend('generated data','pdf')
 title('Rayleigh PDF')
 
+figure
+rPSD = abs(fft(r));
+plot(f,SE)
+hold on
+plot(f,mean(rPSD,2)/(600/y0))
+xlim(1.25*[-fD fD])
+xlabel('frequency [Hz]');ylabel('Magnitude');
+title('Power Spectrum')
+legend('Ideal','Generated')
 end
+
 end
