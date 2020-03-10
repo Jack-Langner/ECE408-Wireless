@@ -5,23 +5,14 @@
 
 function r = genRayleighFadingV2(N,fD,numChan,fig)
 
-%r = NaN(N,numChan);
-%for qq = 1:numChan
-
 % generate the samples of a Rayleigh fading channel with a given maximum
 % Doppler frequency, fD. N is the number of points to be generated, r is a
 % complex column vector that represents the channel at different times
 %N = 1e1; %total number of noise samples
 % improved speed by getting rid of for loop
 
-% N = 2^10;
-% fD = 1;
-% numChan = 5;
-% fig = 'true';
-
 ssbfdn = randn(floor(N/2),2*numChan)+1j*randn(floor(N/2),2*numChan); % single sideband frequency domain noise
-%ssbfdn = (randn(floor(N/2),2));%+1j*randn(floor(N/2),2)); % single sideband frequency domain noise
-%
+% checking length of data
 if isequal(mod(N,2),0)
     fdn = [conj(flipud(ssbfdn));ssbfdn];
 elseif isequal(mod(N,2),1)
@@ -29,11 +20,11 @@ elseif isequal(mod(N,2),1)
 end
 %
 df = (2*fD)/(N-1);
-%T = 1/df;
-f = (-fD:df:fD).';
+f = (-fD:df:fD).'; % frquency vector
 
-SE = 1.5./(pi*fD*sqrt(1-(f/fD).^2)); %clark spectrum
-dSE = (1.5*f)./(pi*(fD^3)*(1-(f/fD).^2).^(3/2));% derivative of clark spectrum
+SE = 1.5./(pi*fD*sqrt(1-(f/fD).^2)); %Doppler spectrum
+dSE = (1.5*f)./(pi*(fD^3)*(1-(f/fD).^2).^(3/2));
+% derivative of Doppler spectrum
 
 y0 = dSE(end-1)*(f(end)-f(end-1))+SE(end-1); %linear approx to SE(fD);
 ind = [1 length(f)];
@@ -42,38 +33,34 @@ sqSE = sqrt(SE);
 
 % first row of r will be real valued, because it is average.
 q = fdn.*sqSE;
-Q = ifft(q,N);
-Q = Q.^2;
+Q = (ifft(q,N)).^2;
 Q = reshape(Q,N,2,numChan);
-Q = sum(Q,2);
-Q = sqrt(reshape(Q,N,numChan));
+Q = sqrt(reshape(sum(Q,2),N,numChan)); % the rayleigh noise
 
-%
-%tmp = sqrt(sum(Q.^2,2));
+
 rbar = mean(abs(Q));
-r = Q./rbar;
-%end
+r = Q./rbar; % unit mean
 
 if isequal(fig,'true')
-figure
-histogram(abs(r(:,1)),50,'Normalization','pdf','LineWidth',1)
+figure % ploting a histogram vs pdf
+histogram(abs(r(:,1)),50,'Normalization','pdf','LineWidth',2)
 x = 0:0.01:3.5;
 s2 = (mean(abs(r(:,1)))/sqrt(pi/2))^2;
 y = (x/s2).*exp(-(x.^2)/(2*s2));
 hold on
-plot(x,y,'LineWidth',2)
-legend('generated data','pdf')
+plot(x,y,'LineWidth',4)
+legend('generated data','pdf','FontSize',24)
 title('Rayleigh PDF')
 
-figure
+figure % comparing the power spectrums
 rPSD = abs(fft(r));
-plot(f,SE)
+plot(f,SE,'LineWidth',2)
 hold on
-plot(f,mean(rPSD,2)/(600/y0))
-xlim(1.25*[-fD fD])
+plot(f,mean(rPSD,2)/(max(mean(rPSD,2))/y0))
+xlim(1.25*[-fD fD]);ylim([0 20])
 xlabel('frequency [Hz]');ylabel('Magnitude');
 title('Power Spectrum')
-legend('Ideal','Generated')
+legend('Ideal','Generated','FontSize',24)
 end
 
 end

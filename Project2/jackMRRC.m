@@ -8,32 +8,24 @@ function ber = jackMRRC(n,M,SNRdb)
 % M is the number of receive antennas
 % SNRdb is the signal to noise ratio in dB
 
-% SNRdb = 20;
-% M = 1;
-% n = 1e3;
-
-b = randi(2,n,1)-1;
-s = -2*b+1;
-chan = genRayleighFadingV2(n,1,M,'false');
+b = randi(2,n,1)-1; %randomly generated data
+s = -2*b+1; % BPSK modulate
+chan = genRayleighFadingV2(n,1,M,'false'); % rayleigh channel
 
 rxData = NaN(n,M);
 for qq = 1:M
     rxData(:,qq) = awgn(s.*chan(:,qq),SNRdb,'measured');
 end
-% SNRL = 10.^(-SNRdb/10);
-% rx2 = s.*chan;
-% mrx = mean(rx2);
-% nois = sqrt(SNRL*mrx).*randn(n,M);
-% rxData = rx2+nois;
 
-st = sum(conj(chan).*rxData,2);
+st = sum(conj(chan).*rxData,2); %generate the s tilde's
 
 d = NaN(n,2);
 d(:,1) = (st-1).*(conj(st)-conj(1));
-d(:,2) = (st-(-1)).*(conj(st)-conj((-1)));
+d(:,2) = (st-(-1)).*(conj(st)-conj((-1))); 
+%calculating distance from s tilde to BPSK symbols
 
-[~,ind] = min(d,[],2);
-mrrc = ind-1;
-ber = sum(abs(b-mrrc))/n;
+[~,ind] = min(d,[],2); %decision rule
+mrrc = ind-1; 
+ber = sum(abs(b-mrrc))/n; %
 
 end
