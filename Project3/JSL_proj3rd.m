@@ -28,12 +28,12 @@ end
 BPMS(jj,:) = 1-2*Tseq;
 Mseq(jj,:) = Tseq;
 end
-% [sum(Mseq) sum(~Mseq)] % check to see if valid M seq
+% [sum(Mseq,2) sum(~Mseq,2)] % check to see if valid M seq
 % Rxcheck = BPMS*BPMS.'; % check autocorrelation of M seq
 % imagesc(Rxcheck) % visualize the autocorrelation of M seq
 
 clear initStates LFSR nxt Tseq ii jj
-
+%
 usMS = zeros(2^n,fml*usf); %up sampled M seq
 usMS(:,1:usf:end) = BPMS;
 %
@@ -43,20 +43,24 @@ mfr = filter(B_RCOS, A_RCOS,rxdata); %matched filter response
 fmfr = reshape(mfr.',fml*usf,[]); %formatted mfr
 numFrame = length(mfr)/(fml*usf);
 
-c1 = NaN(2^n,usf);
-
+c1 = NaN(2^n,usf,numFrame);
+for jj = 1:numFrame
     for ii = 1:usf
-        %c1(jj,ii) = abs(mfr(1:fml*4)*circshift((usMS(jj,:)).',ii-1));
-        %c1(jj,ii) = abs(circshift(usMS(jj,:),ii-1)*fmfr(:,1));
-        c1(:,ii) = abs(circshift(usMS,ii-1,2)*fmfr(:,1));
+        c1(:,ii,jj) = abs(circshift(usMS,ii-1,2)*fmfr(:,jj));
     end
-clear ii
+end
+clear ii jj
 [max1 , ind1] = max(c1);
+%
+max2 = (reshape(max1(:),usf,[])).';
+ind2 = (reshape(ind1(:),usf,[])).';
 
+z = fmfr.*(usMS(64,:)).';
+Z = z(1:4:end,:);
 % plot(c1)
 % legend('0','1','2','3')
-
-[~,iind1] = max(max1);
+    
+%[~,iind1] = max(max1);
 
 %z = rxdata(4:4:fml*4);
 
@@ -71,7 +75,6 @@ clear ii
 % 
 % [max2, ind2] = max(c2);
 % metaD2 = [max2;ind2];
-%%
 %%
 n = 8;
 h = hadamard(n);
