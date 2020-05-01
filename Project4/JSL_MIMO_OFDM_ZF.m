@@ -1,33 +1,18 @@
 
 
-function BER = JSL_MIMOZF(nSamp,MO,snrdb,fD)
+function BER = JSL_MIMO_OFDM_ZF(rate,numBytes,snrdb,fD)
 % 2x2 MIMO with Zero Forcing (psuedo inverse)
-% nSamp = 1e3;
-% MO = 16;
-% snrdb = 20;
+% rate = 6;
+% numBytes = 120;
+% snrdb = 40;
 % fD = 1;
 nTX = 2;
 nRX = 2;
 
-if isequal(MO,2)
-    constV = [1;-1];
-    decData = randi(2,nSamp,nTX);
-    binData = decData-1;
-    binC = binData(:);
-else
-k = log(MO)/log(2);
-p = sqrt(MO);
-n = 2.^(0:k-1).';
-const = (-(p-1):2:(p-1))+1j*((p-1):-2:-(p-1)).'; 
-constV = const(:);%/sqrt(acp);%unit power
-binData = randi(2,nSamp,k,nTX)-1;
-decData = NaN(nSamp,nTX);
-decData(:,1) = (binData(:,:,1)*n)+1;
-decData(:,2) = (binData(:,:,2)*n)+1;
-binC = dec2bin(decData(:)-1)-'0';
-end
-
-x = constV(decData).';
+[msgTX1, msgBin1] = JSL_OFDMModulate(rate,numBytes);
+[msgTX2, msgBin2] = JSL_OFDMModulate(rate,numBytes);
+nSamp = length(msgTX1);
+x = [msgTX1 msgTX2].';
 
 h = genRayleighFadingV3(nSamp,fD,nTX*nRX);%number of samples, fD, channels.
 % w = [randperm(nSamp,nSamp);randperm(nSamp,nSamp);...
@@ -50,25 +35,18 @@ end
 sp = mean(abs(g).^2,3);
 s2 = sp.*10.^(-snrdb/10);
 n = sqrt(s2/2).*(randn(nRX,1,nSamp)+1j*randn(nRX,1,nSamp));
-check1 = var(n,0,3);
 
 y = g+n;
-%
 yt = NaN(nRX,1,nSamp);
 for ii = 1:nSamp
     yt(:,:,ii) = Wzf(:,:,ii)*y(:,:,ii);
 end
 
-y2 = reshape(yt(:),nRX,[]);
-%
-dm = NaN(nRX,nSamp,length(constV));
-for ii = 1:length(constV)
-    dm(:,:,ii) = abs(y2-constV(ii));
-end
-[~,ind] = (min(dm,[],3));
-i2 = ind.';
+y2 = reshape(yt(:),nRX,[]).';
+msgDec1 = JSL_OFDMDemodulate(rate,numBytes,y2(:,1));
+msgDec2 = JSL_OFDMDemodulate(rate,numBytes,y2(:,2));
 
-binRX = dec2bin(i2(:)-1)-'0';
-%
-BER = sum(abs(binC-binRX),'all')/numel(binC);
+ber1 = sum(abs(msgBin1-msgDec1))/numel(msgBin1);
+ber2 = sum(abs(msgBin2-msgDec2))/numel(msgBin2);
+BER = [ber1 ber2];
 end
