@@ -1,0 +1,100 @@
+%% ECE 408 - Wireless Communications
+% Project 4 - MIMO OFDM
+% Jack Langner - MATLAB 2019b
+% Due April 29, 2020 whoops
+%%
+%% (a) MIMO
+numIter = 20;
+numSamp = 1e4;
+MO = [2 4 16];
+snrdb = 30;%(0:3.01:30.1).';%10;
+lenM = length(MO);
+
+fD = 1;
+CM = [0 1 2];
+lenC = length(CM);
+BERnf = zeros(lenC,length(MO),numIter);
+BERpc = zeros(lenC,length(MO),numIter);
+BERzf = zeros(lenC,length(MO),numIter);
+BERmmse = zeros(lenC,length(MO),numIter);
+wb = waitbar(0,'Simulation starting');
+for ii = 1:numIter
+    for jj = 1:length(MO)
+        for nn = 1:length(CM)
+waitbar( ((ii-1)*lenM*lenC+(jj-1)*lenC+nn)/(numIter*lenM*lenC) ,wb,'wrk')
+BERnf(nn,jj,ii) = JSL_MIMONF(numSamp,MO(jj),snrdb,fD,CM(nn));
+BERpc(nn,jj,ii) = JSL_MIMOPC(numSamp,MO(jj),snrdb,fD,CM(nn));
+BERzf(nn,jj,ii) = JSL_MIMOZF(numSamp,MO(jj),snrdb,fD,CM(nn));
+BERmmse(nn,jj,ii) = JSL_MIMOMMSE(numSamp,MO(jj),snrdb,fD,CM(nn));
+        end
+    end
+end
+close(wb)
+%
+BERnf = mean(BERnf,3)
+BERpc = mean(BERpc,3)
+BERzf = mean(BERzf,3)
+BERmmse = mean(BERmmse,3)
+
+%% (b) OFDM
+rate = 6;
+numBytes = 150;
+snrdb = 0;
+ce = 1; %channel enable, 1 is on
+fD = 1;
+BERofdm = OFDMfading(rate,numBytes,snrdb,ce,fD)
+
+%% (c) MIMO OFDM
+numIter = 1;
+rate = [2 3];% 4 5 6 12];
+lenR = length(rate);
+numBytes = 150;
+snrdb = 20;
+fD = 1;
+CM = [0 1 2];
+lenC = length(CM);
+
+BERnfo1 = zeros(lenC,lenR,numIter);
+BERpfo1 = zeros(lenC,lenR,numIter);
+BERzfo1 = zeros(lenC,lenR,numIter);
+BERmo1 = zeros(lenC,lenR,numIter);
+
+BERnfo2 = zeros(lenC,lenR,numIter);
+BERpfo2 = zeros(lenC,lenR,numIter);
+BERzfo2 = zeros(lenC,lenR,numIter);
+BERmo2 = zeros(lenC,lenR,numIter);
+
+wb = waitbar(0,'Simulation starting');
+for ii = 1:numIter
+    for jj = 1:lenR
+        for nn = 1:lenC
+waitbar( ((ii-1)*lenR*lenC+(jj-1)*lenC+nn)/(numIter*lenR*lenC) ,wb,'wrk')
+
+BERnfo1(nn,jj,ii) = JSL_MIMO_OFDM_NF(rate(jj),numBytes,snrdb,fD,CM(nn));
+BERpfo1(nn,jj,ii) = JSL_MIMO_OFDM_PC(rate(jj),numBytes,snrdb,fD,CM(nn));
+BERzfo1(nn,jj,ii) = JSL_MIMO_OFDM_ZF(rate(jj),numBytes,snrdb,fD,CM(nn));
+BERmo1(nn,jj,ii) = JSL_MIMO_OFDM_MMSE(rate(jj),numBytes,snrdb,fD,CM(nn));
+        end
+    end
+end
+close(wb)
+
+BERnfo1 = mean(BERnfo,3)
+BERpfo1 = mean(BERpfo,3)
+BERzfo1 = mean(BERzfo,3)
+BERmo = mean(BERmo,3)
+%%
+N = 1e4;
+numIter = 100;
+A = NaN(numIter,1);
+for ii = 1:numIter
+h = genRayleighFadingV3(N,1,4);
+H = reshape(h.',2,2,[]);
+cn = NaN(2,N);
+for jj = 1:N
+    cn(:,jj) = svd(H(:,:,jj));
+end
+
+A(ii) = mean(cn(1,:)./cn(2,:));
+end
+mean(A)

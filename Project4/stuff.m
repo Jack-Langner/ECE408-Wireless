@@ -1,7 +1,16 @@
 %%
 t = [0:1e-3:pi/2 (pi/2)*ones(1,2e3)  pi/2:1e-3:pi];
 w = sin(t).^2;
-plot(1:length(t),w)
+t1 = linspace(0,4,length(t));
+plot(t1,w,'LineWidth',3)
+title('Continuous Window Function ')
+xlabel('t [\mus]')
+%%
+t = [0:1e-3:pi/2];
+w = sin(t).^2;
+w2 = fliplr(w)+w;
+plot(t,w2,'LineWidth',3)
+title('Window Function Overlap')
 % 802.11 window function for OFDM
 %% borrowing from myself
 numSym = 280;
@@ -80,3 +89,20 @@ z1 = z2(:,:,ii);
 end
 z22 = abs(sum(z2,3))<=2;
 imagesc(z22)
+%% check my stuff against MathWorks
+Omod = comm.OFDMModulator('FFTLength',64,'NumGuardBandCarriers',[6;5],...
+    'InsertDCNull',true,'PilotInputPort',true,...
+    'PilotCarrierIndices',[12; 26;40;54],...
+    'CyclicPrefixLength',16,'NumSymbols',numSym);
+
+r2 = step(Omod,x,pnn([1 2 4 5],1:numSym));
+
+awgnc = comm.AWGNChannel('NoiseMethod','Signal to noise ratio (Es/No)',...
+    'SamplesPerSymbol',1,'EsNo',20);
+r3 = awgnc(r2);
+Demod = comm.OFDMDemodulator(Omod);
+% v = step(Demod,r);
+v2 = step(Demod,r3);
+
+check = abs(x-v2)
+% ouch

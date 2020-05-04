@@ -22,7 +22,7 @@ encodedSIGNAL = step(rateStruct.hConvEnc,msgBin);
 %q = reshape(encodedSIGNAL,rateStruct.NCBPS,numSym);
 q = reshape(encodedSIGNAL,rateStruct.NCBPS,[]);
 %q = [(1000:1047).' (1048:1095).'];
-%
+%   
 % interleaving the data
 s = max([rateStruct.NBPSC/2 1]); %number of coded bits per subcarrier
 kint = (0:rateStruct.NCBPS-1).'; % initial index of data in OFDM symbol

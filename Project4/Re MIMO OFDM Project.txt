@@ -1,0 +1,143 @@
+Return-Path: <samkeene@gmail.com>
+Received: from mail-qt0-f170.google.com ([209.85.216.170]) by mx.perfora.net
+ (mxeueus003 [74.208.5.21]) with ESMTPS (Nemesis) id 0LimUd-1efdtw0RPJ-00cwth
+ for <tim@musicandengineering.com>; Wed, 25 Apr 2018 20:37:01 +0200
+Received: by mail-qt0-f170.google.com with SMTP id q13-v6so28114469qtl.3
+        for <tim@musicandengineering.com>; Wed, 25 Apr 2018 11:37:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:subject:from:in-reply-to:date:cc:message-id:references
+         :to;
+        bh=I6S1WsXnFoPCf28+tDBnH81u1CM0n9HviVnxxC4k0Tg=;
+        b=YLeVTsuESoscklGkar3tATwouFk12YRYOH89fns1ekZXJlfRJcH66sDpUxE4q9TsvX
+         Zh0aO2KRHFTguQGR+fjS/LwO+ycQ/qnY4gqfdkcBkY8QoArTe9b1164NdsPx7wsPLOdi
+         wIfzO/Gq/FLzl74wTwEVjMObFY94DRfrPwstwXDlshLTt3dHMTf8/43dBywg7r5dsQbf
+         lBsZYj2MWbctMpzBaJYz38BCWfL7WTMRpRRjCYh6x7MYW/1I6mozkIw92ywepb3qXHY1
+         FDbjVAANVrad1C4bdmB3wUYkFWdGKoECf+vD+1VqKOMR4l5w1+h1UR4rZTBXvS1Cj4VK
+         a/hg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :message-id:references:to;
+        bh=I6S1WsXnFoPCf28+tDBnH81u1CM0n9HviVnxxC4k0Tg=;
+        b=t7s3+j0xglb1nbMTA7Zckes4fuAULyO655cK9ARKQ0Xcnludmh6Y+AG6P746mqYQ5C
+         BoG5Q8HiEIA+jNFv20eJsXokSdI/FBq14bRaziVBBZke6f4ShICMNUymgvWfqvY8gxFz
+         jEMt1LYrIrtvY1y8InzPF46h2IDY8cmyzPJSjv3EJEgVsKvXrvRMPHoF7jofddql75BP
+         h5ZCV/PeLV3DMB/p7PFfY4Lj4Zzk1KELulp2m0xhu1EgK3l7nTTKlPGhwDXy3F8ynXD9
+         eNOlo05KazX5UpdL3dv2XH105X5dioRfcMvrAzSIbQTvei8tM42wFSxyE3GmSU0C73ft
+         WpoA==
+X-Gm-Message-State: ALQs6tCYoGPTyPoEwxAheDmKqsQIVOSYoB+8Ba7iRHpGbSZlOvOUgGeZ
+	krVBd7lAghlH9Avc5Yoza9g=
+X-Google-Smtp-Source: AB8JxZq0G85jCBPzHnVco8UoWis7FfQm6iq75CibwXTzLv1cCR/n2nhjD5vJEyyAf/h4W9l4Do+Xmw==
+X-Received: by 10.12.249.11 with SMTP id v11mr4436972qvn.37.1524681420216;
+        Wed, 25 Apr 2018 11:37:00 -0700 (PDT)
+Received: from [10.30.13.90] (newruba.cooper.edu. [199.98.16.5])
+        by smtp.gmail.com with ESMTPSA id h18-v6sm4590731qtn.38.2018.04.25.11.36.59
+        (version=TLS1 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Wed, 25 Apr 2018 11:36:59 -0700 (PDT)
+Content-Type: multipart/alternative; boundary="Apple-Mail=_CB63B521-E5B9-4565-B12F-38ABA87920DC"
+Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
+Subject: Re: MIMO OFDM Project
+From: Sam Keene <samkeene@gmail.com>
+In-Reply-To: <520e0994-0419-c508-f379-b375401acfbc@gmail.com>
+Date: Wed, 25 Apr 2018 14:36:58 -0400
+Cc: tim@musicandengineering.com
+Message-Id: <372CEE3A-A000-46F4-B77F-FB935707FF30@gmail.com>
+References: <520e0994-0419-c508-f379-b375401acfbc@gmail.com>
+To: Nikola Janjusevic <nikopjj@gmail.com>
+X-Mailer: Apple Mail (2.1878.6)
+Envelope-To: <tim@musicandengineering.com>
+X-UI-Filterresults: notjunk:1;V01:K0:/JCipsXEoPI=:6/q4bTM3O32La94kcL3nJFHGRg
+ 1uQluM7AhoP6FCS8sLWIcGJxAb1tNx5pSgnkTWL6UrH3VYNmgw35jjE8i73T+eFvKk3DZR800
+ 18Rqma+VOXEujKWO3gXPyamqRNstngRUvttw6HJ6nqwL74MGNGQzAg8tK8u7CBn/xM9Lnlqej
+ UIWXX4bahC6tL0SDISV0Hr2iz+Lsip2vDFIwCkNQT834g9Tu4d110+KW2QzVi4Ra8/RhZFvPK
+ Q/hCdGEoJUhpCIV2xDcTH/0YB6w/3dTdTEaHXyqL1tSiSCMTLv7z7DcunxFVeUHXojCwFAa0e
+ iKXeRgi31N1BFv2Wc3CzmyuilxVrTxO87hllhOlLIqiftjpzDIeWEqAkRDC9qYvuJNc/vdY+u
+ dDWOn1TD8ZzVxRdbaJmovqfRNLK779qxo/5XAbNvJQCAY+d3eVunCUuKQXn0xNir6rQQfAvS/
+ 9zUGqipuB7HNfxOj55FpvUclubvfWdpt+H1h26eqqeCnhUSJB4MVyZ+5A7ouDr+Ac+t+R0ELF
+ dg/7VUJdtYHi4HWo6ve5kpdvDJOp8JUOTelZ0WMHZ5bUFS1edAWGxRD/L6RWre1FeWzFqXVO1
+ 4NTd5iMwA/dbYl+gkIJtebIBlX62jliW9WfeMW6fgPH5OD3KW0C0C0Vzg+k/9NHV8V+mlR0jF
+ sz/Bt8KIsHpA6epgkQxk/xIUYrh04nwq5jzi6dw2qV+soWyfKpPAz4a6hLPSRvS+7c2CRqv1/
+ Ufd7PfCfY74zQEtaabNIEY1QKBsUjmCGUKwE7qfHoKM2EIOdSz9OGLjbhoFndbkF3Tp7Xna5H
+ gDcluloNxHiWmgiHLlCjF+D6bICE/J4Dna5Z4noKelnJt44pgacrinsRxrIxJGWk7qjkEQvAf
+ jhGPXlK+lAwcAKUdLNXqRv3R/bsgiz+CEtgJ2AgMDtZJ5Yrjg38O1yOksCcD+CzDHuartXBjw
+ KISHrLOQ54oyKigwM0jE3uow0CXaJSTHQwPrQXaLsMzsv4DM6h/53NtPVdvgyHQsFR1AqEzo6
+ K6VoxfkCcmv64bwfx67AbSk5nY92BNmSecGRduIej92fAKrBV3Dl5+jSJH4fkBcJ3sC9PHaA0
+ aghvnyEyYSllKgEKkjqZrZAK7Pdnn0+UKpaetsx6r9ABhGnJ/KpygroJuHnQSOzzGmyH7qG71
+ MYkJVZG9z46dtZdOb8kemhqmEcUAlHd2IgaYSEGK8gTCt/2A14lTwVxryvhoQ0yAQcnLAQZkY
+ mN3MmAAiCtHgsNnvHTohyp96VUZUQuPwoNAgxdRJnyVEDO9KflUuKZQmeQOrchw+xaErE8ekD
+ OiHyQkBLUm9hCfFC6dESaG7ovip0ZL55bAbkq5fr0V66Ej6gzyufJfpkESxa2qyvaLaWzq4uS
+ 8sfvRt1MNx+nw6bNRtbLI1InP7dQp3/ybZsxhLQGtfR1Dmq5FZoUAG09b8h
+
+
+--Apple-Mail=_CB63B521-E5B9-4565-B12F-38ABA87920DC
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain;
+	charset=windows-1252
+
+Hi Tim,
+
+Yes - just to echo what Nikola said=85 when I assigned that project, =
+they didn=92t have to estimate the CSIR or feedback the CSIT. They could =
+use perfect, instantaneous knowledge of it, and just build the system as =
+if they had that. It was a very challenging project even with that =
+assumption.
+
+-Sam
+
+
+Sam Keene, Ph.D.
+Associate Professor and Brewmaster
+Electrical Engineering
+The Cooper Union
+keene@cooper.edu
+samkeene@gmail.com
+http://ee.cooper.edu/~keene/
+
+On Apr 25, 2018, at 1:48 PM, Nikola Janjusevic <nikopjj@gmail.com> =
+wrote:
+
+> Hello,
+>=20
+> Talked to Keene today about the project. He says no training symbols, =
+just assume perfect CSIR and that CSIT implies CSIR.
+>=20
+> Cheers,
+>=20
+> - Nikola
+>=20
+
+
+--Apple-Mail=_CB63B521-E5B9-4565-B12F-38ABA87920DC
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html;
+	charset=windows-1252
+
+<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html =
+charset=3Dwindows-1252"></head><body style=3D"word-wrap: break-word; =
+-webkit-nbsp-mode: space; -webkit-line-break: after-white-space;">Hi =
+Tim,<div><br></div><div>Yes - just to echo what Nikola said=85 when I =
+assigned that project, they didn=92t have to estimate the CSIR or =
+feedback the CSIT. They could use perfect, instantaneous knowledge of =
+it, and just build the system as if they had that. It was a very =
+challenging project even with that =
+assumption.</div><div><br></div><div>-Sam</div><div><br></div><div><br><di=
+v>
+<div>Sam Keene, Ph.D.</div><div><div>Associate Professor and =
+Brewmaster</div><div>Electrical Engineering</div><div>The Cooper =
+Union</div><div><a =
+href=3D"mailto:keene@cooper.edu">keene@cooper.edu</a></div><div><a =
+href=3D"mailto:samkeene@gmail.com">samkeene@gmail.com</a></div><div><a =
+href=3D"http://ee.cooper.edu/~keene/">http://ee.cooper.edu/~keene/</a></di=
+v></div>
+
+</div>
+<br><div><div>On Apr 25, 2018, at 1:48 PM, Nikola Janjusevic &lt;<a =
+href=3D"mailto:nikopjj@gmail.com">nikopjj@gmail.com</a>&gt; =
+wrote:</div><br class=3D"Apple-interchange-newline"><blockquote =
+type=3D"cite">Hello,<br><br>Talked to Keene today about the project. He =
+says no training symbols, just assume perfect CSIR and that CSIT implies =
+CSIR.<br><br>Cheers,<br><br>- =
+Nikola<br><br></blockquote></div><br></div></body></html>=
+
+--Apple-Mail=_CB63B521-E5B9-4565-B12F-38ABA87920DC--
